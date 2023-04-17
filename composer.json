@@ -1,0 +1,21 @@
+{
+    "name": "zfhassaan/easypaisa",
+    "description": "Easypaisa payment gateway integration with hosted checkout.",
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.5"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Zfhassaan\\Easypaisa\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Hassaan Ali",
+            "email": "zfhassaan@gmail.com"
+        }
+    ]
+}

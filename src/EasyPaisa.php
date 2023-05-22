@@ -15,6 +15,26 @@ class Easypaisa extends Payment
      */
     public function sendRequest()
     {
-        //
+
+    }
+
+    /**
+     * Send Hosted Checkout Request
+     * @return Response|Application|ResponseFactory
+     */
+    public function HostedCheckout($request)
+    {
+        if(
+            isset($request->amount) &&
+            isset($request->orderId)
+
+        ) {
+            $this->setAmount($request->amount);
+            $this->setOrderId($request->orderId);
+            $hashRequest = $this->gethashRequest();
+            $checkoutURL = $this->getCheckoutUrl();
+            dd($checkoutURL);
+        }
+
     }
 }

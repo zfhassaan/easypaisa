@@ -9,7 +9,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "zfhassaan\\easypaisa\\": "src/"
+            "zfhassaan\\Easypaisa\\": "src/"
         }
     },
     "authors": [
@@ -18,5 +18,15 @@
             "email": "zfhassaan@gmail.com"
         }
     ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "zfhassaan\\Easypaisa\\provider\\EasypaisaServiceProvider"
+            ],
+            "aliases": {
+                "easypaisa": "zfhassaan\\Easypaisa\\Facade\\EasypaisaFacade"
+            }
+        }
+    },
     "minimum-stability": "stable"
 }

@@ -1,9 +1,7 @@
 <?php
 
+// namespace zfhassaan\easypaisa\provider;
 namespace zfhassaan\easypaisa\provider;
-
-use zfhassaan\easypaisa\Facade\EasypaisaFacade;
-use zfhassaan\easypaisa\Easypaisa;
 
 class EasyPaisaServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -13,7 +11,7 @@ class EasyPaisaServiceProvider extends \Illuminate\Support\ServiceProvider
     public function boot() {
         if($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../../config/config.php'=>config_path('Easypaisa.php'),
+                __DIR__.'/../../config/config.php'=>config_path('easypaisa.php'),
             ],'config');
         }
     }

@@ -21,7 +21,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "zfhassaan\\Easypaisa\\Providers\\EasypaisaServiceProvider"
+                "zfhassaan\\Easypaisa\\EasypaisaServiceProvider"
             ],
             "aliases": {
                 "easypaisa": "zfhassaan\\Easypaisa\\Facade\\EasypaisaFacade"

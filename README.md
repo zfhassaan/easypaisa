@@ -19,12 +19,13 @@ To install the EasyPaisa package, follow these steps:
 Install the package via Composer by running the following command:
 
 ```bash
-composer require vendor-name/easypaisa-package
+composer require zfhassaan/easypaisa
 ```
+
 Publish the package configuration file by running the following command:
 
 ```php 
-php artisan vendor:publish --tag=easypaisa-config
+php artisan vendor:publish
 ```
 
 Update the `.env` file with the required configuration values:

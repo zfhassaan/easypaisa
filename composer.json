@@ -3,12 +3,13 @@
     "description": "Unlock the power of EasyPaisa Payment Gateway in Laravel 9 and Laravel 10. Accept payments seamlessly and securely, empowering your business to thrive in the digital era. Experience hassle-free integration and provide a seamless checkout experience for your customers.",
     "type": "library",
     "require": {
-        "php": "^8.1"
+        "php": "^8.1",
+        "guzzlehttp/guzzle": "^7.7"
     },
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "zfhassaan\\Easypaisa\\": "src/"
+            "Zfhassaan\\Easypaisa\\": "src/"
         }
     },
     "authors": [
@@ -20,7 +21,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "zfhassaan\\Easypaisa\\provider\\EasypaisaServiceProvider"
+                "zfhassaan\\Easypaisa\\Providers\\EasypaisaServiceProvider"
             ],
             "aliases": {
                 "easypaisa": "zfhassaan\\Easypaisa\\Facade\\EasypaisaFacade"

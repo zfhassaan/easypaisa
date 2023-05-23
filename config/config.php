@@ -17,4 +17,5 @@ return [
     'prod_hashkey'=> env('EASYPAISA_PRODUCTION_HASHKEY'),
     'prod_url'=> env('EASYPAISA_PRODUCTION_URL'),
 
+    'hosted'=> env('EASYPAISA_HOSTED_CHECKOUT'),
 ];

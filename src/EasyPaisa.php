@@ -1,11 +1,13 @@
 <?php
 
-namespace zfhassaan\Easypaisa;
+namespace Zfhassaan\Easypaisa;
 
-use zfhassaan\easypaisa\Payment;
+use Zfhassaan\Easypaisa\Payment;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use GuzzleHttp\Client;
 
 class Easypaisa extends Payment
 {
@@ -13,28 +15,12 @@ class Easypaisa extends Payment
      * Send Request
      * @return Response|Application|ResponseFactory
      */
-    public function sendRequest()
+    public function sendRequest($request)
     {
+        $credentials = $this->getCredentials();
+        $response = Http::timeout(60)->withHeaders(['credentials'=>$credentials])->post($this->getApiUrl(),$request);
+        $result = $response->json();
 
-    }
-
-    /**
-     * Send Hosted Checkout Request
-     * @return Response|Application|ResponseFactory
-     */
-    public function HostedCheckout($request)
-    {
-        if(
-            isset($request->amount) &&
-            isset($request->orderId)
-
-        ) {
-            $this->setAmount($request->amount);
-            $this->setOrderId($request->orderId);
-            $hashRequest = $this->gethashRequest();
-            $checkoutURL = $this->getCheckoutUrl();
-            dd($checkoutURL);
-        }
-
+        return $result;
     }
 }

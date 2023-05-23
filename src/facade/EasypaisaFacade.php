@@ -1,6 +1,6 @@
 <?php
 
-namespace zfhassaan\easypaisa\Facade;
+namespace Zfhassaan\Easypaisa\Facade;
 
 use Illuminate\Support\Facades\Facade;
 

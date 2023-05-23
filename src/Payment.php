@@ -1,6 +1,6 @@
 <?php
 
-namespace zfhassaan\Easypaisa;
+namespace Zfhassaan\Easypaisa;
 
 use Carbon\Carbon;
 use DateTime;
@@ -15,11 +15,11 @@ class Payment
 {
     protected string $api_mode; // Sandbox / Production
     protected string $apiUrl; // API Url set for the value
-    protected string $storeId; // Store ID depending on Sandbox or Production
+    private ?string $storeId = null; // Store ID depending on Sandbox or Production
     protected string $type; // Hosted or Direct Checkout
     protected string $username; // Username
     protected string $password; // Password
-    protected string $hashKey; // HashKey from Sandbox or Production
+    private ?string $hashKey = null;// HashKey from Sandbox or Production
     protected string $callbackUrl; // success/failure message
     protected string $checkoutUrl; // Checkout url for hosted checkout.
     protected string $orderId; // OrderId;
@@ -45,34 +45,36 @@ class Payment
      * Initialize Config Values
      * @return void
      */
-    public function initConfig(): void
+    public function initConfig()
     {
+
+        // dd(config('easypaisa.easypaisa.sandbox_url'));
         $this->api_mode = config('easypaisa.mode');
-        if($this->api_mode = 'sandbox' ) {
-            $this->setApiUrl(config('sandbox_url'));
-            $this->setUserName(config('sandbox_username'));
-            $this->setPassword(config('sandbox_password'));
-            $this->setStoreId(config('sandbox_storeid'));
-            $this->setHashKey(config('sandbox_hashkey'));
+        $this->setCallbackUrl(config('easypaisa.callback'));
+        $this->setType(config('easypaisa.type'));
+
+        if ($this->getType() === 'hosted') {
+            $this->setApiUrl(config('easypaisa.hosted'));
         } else {
-            $this->setApiUrl(config('prod_url'));
-            $this->setUserName(config('prod_username'));
-            $this->setPassword(config('prod_username'));
-            $this->setStoreId(config('prod_storeid'));
-            $this->setHashKey(config('prod_hashkey'));
+            if ($this->api_mode === 'sandbox') {
+                $this->setApiUrl(config('easypaisa.sandbox_url'));
+                $this->setUserName(config('easypaisa.sandbox_username'));
+                $this->setPassword(config('easypaisa.sandbox_password'));
+                $this->setStoreId(config('easypaisa.sandbox_storeid'));
+                $this->setHashKey(config('easypaisa.sandbox_hashkey'));
+            } else {
+                $this->setApiUrl(config('easypaisa.prod_url'));
+                $this->setUserName(config('easypaisa.prod_username'));
+                $this->setPassword(config('easypaisa.prod_username'));
+                $this->setStoreId(config('easypaisa.prod_storeid'));
+                $this->setHashKey(config('easypaisa.prod_hashkey'));
+            }
         }
-        $this->setCallbackUrl(config('callback'));
-        $this->setType(config('type'));
-        $this->currentDate = Carbon::now('Asia/Karachi');
+
+        $this->currentDate = now()->setTimezone('Asia/Karachi');
         $this->expiryDate = $this->currentDate->format('Ymd His');
         $this->timestamp = $this->currentDate->format('Y-m-d\TH:i:s');
-    }
 
-    protected function crypt($data)
-    {
-        $cipher = 'aes-128-ecb';
-        $crypttext = openssl_encrypt($data,$cipher,$this->getHashKey(),OPENSSL_RAW_DATA);
-        return $this->setHashKey(base64_encode($crypttext));
     }
 
     protected function gethashRequest()
@@ -81,13 +83,19 @@ class Payment
             'amount'=> $this->getAmount(),
             'orderRefNum' => $this->getOrderId(),
             'paymentMethod'=>'InitialRequest',
-            'postBackURL'=>$this->getCallbackUrl(),
+            'postBackURL'=>urldecode($this->getCallbackUrl()),
             'storeId'=>$this->getStoreId(),
             'timestamp'=>$this->getTimestamp(),
         ];
 
         $query = http_build_query($params);
-        return $this->crypt($query);
+        $query = str_replace(['%3A', '%2F'], [':', '/'], $query );
+
+        $cipher = 'aes-128-ecb';
+        $crypttext = openssl_encrypt($query,$cipher,$this->getHashKey(),OPENSSL_RAW_DATA);
+        $crypttext = $this->setHashKey(base64_encode($crypttext));
+
+        return $this->getHashKey();
 
     }
     protected function getCheckoutUrl()
@@ -96,8 +104,7 @@ class Payment
             'storeId'=> $this->getStoreId(),
             'orderId'=> $this->getOrderId(),
             'transactionAmount'=> $this->getAmount(),
-            'mobileAccountNo'=> $this->getMobileAccount(),
-            'emailAddress'=>$this->getEmailAddress(),
+
             'transactionType'=>$this->gettype(),
             'tokenExpiry'=> '',
             'bankIdentificationNumber'=> '',
@@ -107,7 +114,19 @@ class Payment
             'signature' => ''
         ];
 
-        $checkoutUrl = $this->setCheckoutURL(http_build_query($params));
+        // 'mobileAccountNo'=> $this->getMobileAccount(),
+
+        if(isset($this->mobileAccount)) {
+            $params['mobileAccountNo'] = $this->getMobileAccount();
+        }
+
+        if(isset($this->emailAddress)) {
+            $params['emailAddress'] = $this->getEmailAddress();
+        }
+        $query = http_build_query($params);
+        $query = str_replace(['%3A', '%2F'], [':', '/'], $query );
+        dd($this->getApiUrl().$query);
+        $checkoutUrl = $this->setCheckoutURL($query);
         return $checkoutUrl;
     }
     // Get Encrypted Credentials
@@ -138,68 +157,68 @@ class Payment
         return $this->expiryDate;
     }
     // Setter and Getter for $api_mode
-    protected function setApiMode(string $api_mode): void
+    protected function setApiMode(string $api_mode)
     {
         $this->api_mode = $api_mode;
     }
 
-    protected function getApiMode(): string
+    protected function getApiMode()
     {
         return $this->api_mode;
     }
 
     // Setter and Getter for $apiUrl
-    protected function setApiUrl(string $apiUrl): void
+    protected function setApiUrl(string $apiUrl)
     {
         $this->apiUrl = $apiUrl;
     }
 
-    protected function getApiUrl(): string
+    protected function getApiUrl()
     {
         return $this->apiUrl;
     }
 
 
     // Setter and Getter for $storeId
-    protected function setStoreId(string $storeId): void
+    protected function setStoreId(string $storeId)
     {
         $this->storeId = $storeId;
     }
 
-    protected function getStoreId(): string
+    protected function getStoreId()
     {
         return $this->storeId;
     }
 
     // Setter and Getter for $type
-    protected function setType(string $type): void
+    protected function setType(string $type)
     {
         $this->type = $type;
     }
 
-    protected function getType(): string
+    protected function getType()
     {
         return $this->type;
     }
 
     // Setter and Getter for $username
-    protected function setUserName(string $username): void
+    protected function setUserName(string $username)
     {
         $this->username = $username;
     }
 
-    protected function getUsername(): string
+    protected function getUsername()
     {
         return $this->username;
     }
 
     // Setter and Getter for $password
-    protected function setPassword(string $password): void
+    protected function setPassword(string $password)
     {
         $this->password = $password;
     }
 
-    protected function getPassword(): string
+    protected function getPassword()
     {
         return $this->password;
     }
@@ -210,62 +229,62 @@ class Payment
         $this->hashKey = $hashKey;
     }
 
-    protected function getHashKey(): string
+    protected function getHashKey()
     {
         return $this->hashKey;
     }
 
     // Setter and Getter for $callbackUrl
-    protected function setCallbackUrl(string $callbackUrl): void
+    protected function setCallbackUrl(string $callbackUrl)
     {
         $this->callbackUrl = $callbackUrl;
     }
 
-    protected function getCallbackUrl(): string
+    protected function getCallbackUrl()
     {
         return $this->callbackUrl;
     }
 
     // Setter and Getter for $orderId
-    protected function setOrderId(string $orderId): void
+    protected function setOrderId(string $orderId)
     {
         $this->orderId = $orderId;
     }
 
-    protected function getOrderId(): string
+    protected function getOrderId()
     {
         return $this->orderId;
     }
 
     // Setter and Getter for $amount
-    protected function setAmount(string $amount): void
+    protected function setAmount(string $amount)
     {
         $this->amount = $amount;
     }
 
-    protected function getAmount(): string
+    protected function getAmount()
     {
         return $this->amount;
     }
 
     // Setter and Getter for $mobileAccount
-    protected function setMobileAccount(string $mobileAccount): void
+    protected function setMobileAccount(string $mobileAccount)
     {
         $this->mobileAccount = $mobileAccount;
     }
 
-    protected function getMobileAccount(): string
+    protected function getMobileAccount()
     {
         return $this->mobileAccount;
     }
 
     // Setter and Getter for $emailAddress
-    protected function setEmailAddress(string $emailAddress): void
+    protected function setEmailAddress(string $emailAddress)
     {
         $this->emailAddress = $emailAddress;
     }
 
-    protected function getEmailAddress(): string
+    protected function getEmailAddress()
     {
         return $this->emailAddress;
     }

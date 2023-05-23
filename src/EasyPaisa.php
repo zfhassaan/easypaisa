@@ -18,7 +18,9 @@ class Easypaisa extends Payment
      */
     public function sendRequest($request)
     {
+
         $credentials = $this->getCredentials();
+
         $data = [
             'orderId'=> strip_tags($request['orderId']),
             'storeId' => $this->getStoreId(),

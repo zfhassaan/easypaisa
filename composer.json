@@ -21,10 +21,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "zfhassaan\\Easypaisa\\EasypaisaServiceProvider"
+                "Zfhassaan\\Easypaisa\\EasypaisaServiceProvider"
             ],
             "aliases": {
-                "easypaisa": "zfhassaan\\Easypaisa\\Facade\\EasypaisaFacade"
+                "easypaisa": "Zfhassaan\\Easypaisa\\Facade\\EasypaisaFacade"
             }
         }
     },

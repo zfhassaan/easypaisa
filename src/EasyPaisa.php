@@ -13,12 +13,25 @@ class Easypaisa extends Payment
 {
     /**
      * Send Request
+     *
      * @return Response|Application|ResponseFactory
      */
     public function sendRequest($request)
     {
         $credentials = $this->getCredentials();
-        $response = Http::timeout(60)->withHeaders(['credentials'=>$credentials])->post($this->getApiUrl(),$request);
+        $data = [
+            'orderId'=> strip_tags($request['orderId']),
+            'storeId' => $this->getStoreId(),
+            'transactionAmount'=> strip_tags($request['amount']),
+            'transactionType'=> 'MA',
+            'mobileAccountNo'=> strip_tags($request['mobileAccountNo']),
+            'emailAddress'=> strip_tags($request['emailAddress'])
+        ];
+        $response = Http::timeout(60)->withHeaders([
+            'credentials'=>$credentials,
+            'Content-Type'=> 'application/json'
+            ])->post($this->getApiUrl(),$data);
+
         $result = $response->json();
 
         return $result;

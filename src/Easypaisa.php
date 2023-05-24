@@ -30,7 +30,6 @@ class Easypaisa extends Payment
             'mobileAccountNo'=> strip_tags($request['mobileAccountNo']),
             'emailAddress'=> strip_tags($request['emailAddress'])
         ];
-dd($data);
         $response = Http::timeout(60)->withHeaders([
             'credentials'=>$credentials,
             'Content-Type'=> 'application/json'

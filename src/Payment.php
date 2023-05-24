@@ -4,6 +4,7 @@ namespace Zfhassaan\Easypaisa;
 
 use Carbon\Carbon;
 use DateTime;
+use DateTimeZone;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Date;
 
 class Payment
 {
+
     protected string $api_mode; // Sandbox / Production
     protected string $apiUrl; // API Url set for the value
     private ?string $storeId = null; // Store ID depending on Sandbox or Production
@@ -22,6 +24,7 @@ class Payment
     private ?string $hashKey = null;// HashKey from Sandbox or Production
     protected string $callbackUrl; // success/failure message
     protected string $checkoutUrl; // Checkout url for hosted checkout.
+    protected string $redirectUrl; // Redirect to page.
     protected string $orderId; // OrderId;
     protected string $amount; // Order Amount
     protected string $mobileAccount; // Account or Mobile Account
@@ -47,14 +50,14 @@ class Payment
      */
     public function initConfig()
     {
-
-        // dd(config('easypaisa.easypaisa.sandbox_url'));
         $this->api_mode = config('easypaisa.mode');
         $this->setCallbackUrl(config('easypaisa.callback'));
         $this->setType(config('easypaisa.type'));
 
         if ($this->getType() === 'hosted') {
             $this->setApiUrl(config('easypaisa.hosted'));
+            $this->setStoreId(config('easypaisa.sandbox_storeid'));
+            $this->setHashKey(config('easypaisa.sandbox_hashkey'));
         } else {
             if ($this->api_mode === 'sandbox') {
                 $this->setApiUrl(config('easypaisa.sandbox_url'));
@@ -71,29 +74,28 @@ class Payment
             }
         }
 
-        $this->currentDate = now()->setTimezone('Asia/Karachi');
-        $this->expiryDate = $this->currentDate->format('Ymd His');
-        $this->timestamp = $this->currentDate->format('Y-m-d\TH:i:s');
-
+        $currentDate = new DateTime();
+        $currentDate->setTimezone(new DateTimeZone('Asia/Karachi'));
+        $this->setCurrentDate($currentDate);
+        $timeStamp = $currentDate->format('Y-m-d').'T'.$currentDate->format('H:i:s');
+        $this->setTimestamp($timeStamp);
     }
 
-    protected function gethashRequest()
+    protected function gethashRequest($request)
     {
-        $params = [
-            'amount'=> $this->getAmount(),
-            'orderRefNum' => $this->getOrderId(),
-            'paymentMethod'=>'InitialRequest',
-            'postBackURL'=>urldecode($this->getCallbackUrl()),
-            'storeId'=>$this->getStoreId(),
-            'timestamp'=>$this->getTimestamp(),
-        ];
+        $this->setOrderId($request['orderRefNum']);
+        $this->setAmount($request['amount']);
 
-        $query = http_build_query($params);
-        $query = str_replace(['%3A', '%2F'], [':', '/'], $query );
+        $currentDate = new DateTime();
+        $currentDate->setTimezone(new DateTimeZone('Asia/Karachi'));
+        $timeStamp = $currentDate->format('Y-m-d').'T'.$currentDate->format('H:i:s');
+
+        $query =  'amount='.$request['amount'].'&orderRefNum='.$request['orderRefNum'].'&paymentMethod=InitialRequest&postBackURL='.$request['postBackURL'].'&storeId='.$this->getStoreId().'&timeStamp='.$timeStamp;
 
         $cipher = 'aes-128-ecb';
         $crypttext = openssl_encrypt($query,$cipher,$this->getHashKey(),OPENSSL_RAW_DATA);
-        $crypttext = $this->setHashKey(base64_encode($crypttext));
+        $crypttext = base64_encode($crypttext);
+        $this->setHashKey($crypttext);
 
         return $this->getHashKey();
 
@@ -104,8 +106,9 @@ class Payment
             'storeId'=> $this->getStoreId(),
             'orderId'=> $this->getOrderId(),
             'transactionAmount'=> $this->getAmount(),
-
-            'transactionType'=>$this->gettype(),
+            'mobileAccountNo'=>$this->setMobileAccount(''),
+            'emailAddress'=>$this->setEmailAddress(''),
+            'transactionType'=>'InitialRequest',
             'tokenExpiry'=> '',
             'bankIdentificationNumber'=> '',
             'encryptedHashRequest'=> urlencode($this->getHashKey()),
@@ -114,8 +117,6 @@ class Payment
             'signature' => ''
         ];
 
-        // 'mobileAccountNo'=> $this->getMobileAccount(),
-
         if(isset($this->mobileAccount)) {
             $params['mobileAccountNo'] = $this->getMobileAccount();
         }
@@ -123,11 +124,11 @@ class Payment
         if(isset($this->emailAddress)) {
             $params['emailAddress'] = $this->getEmailAddress();
         }
-        $query = http_build_query($params);
-        $query = str_replace(['%3A', '%2F'], [':', '/'], $query );
-        dd($this->getApiUrl().$query);
-        $checkoutUrl = $this->setCheckoutURL($query);
-        return $checkoutUrl;
+
+        $checkout_url = $this->getApiUrl().'?storeId='.$this->getStoreId().'&orderId='.$this->getOrderId().'&transactionAmount='.$this->getAmount().'&mobileAccountNo=&emailAddress=&transactionType=InitialRequest&tokenExpiry=&bankIdentificationNumber=&encryptedHashRequest='.urlencode($this->getHashKey()).'&merchantPaymentMethod=&postBackURL='.$this->getCallbackUrl().'&signature=';
+
+        $this->setRedirectURL($checkout_url);
+        return $this->getRedirectURL();
     }
     // Get Encrypted Credentials
     protected function getCredentials() {
@@ -140,10 +141,25 @@ class Payment
         $this->checkoutUrl = $checkoutUrl;
     }
 
+    protected function setRedirectURL($url)
+    {
+        $this->redirectUrl = $url;
+    }
+    protected function getRedirectURL()
+    {
+        return $this->redirectUrl;
+    }
+
     // Get Current Date
-    protected function getCurrentDate():Date
+    protected function getCurrentDate()
     {
         return $this->currentDate;
+    }
+
+    protected function setCurrentDate($currentDate)
+    {
+
+        $this->currentDate = $currentDate->setTimezone(new DateTimeZone('Asia/Karachi'));
     }
 
     // Get Timestamp
@@ -152,9 +168,19 @@ class Payment
         return $this->timestamp;
     }
 
+    protected function setTimestamp($timestamp)
+    {
+        $this->timestamp = $timestamp;
+    }
+
     // Get Expiry Date
     protected function getExpiryDate() {
         return $this->expiryDate;
+    }
+
+    protected function setExpiryDate($expiry)
+    {
+        $this->expiryDate = $expiry;
     }
     // Setter and Getter for $api_mode
     protected function setApiMode(string $api_mode)

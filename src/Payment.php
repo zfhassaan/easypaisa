@@ -68,7 +68,7 @@ class Payment
             } else {
                 $this->setApiUrl(config('easypaisa.prod_url'));
                 $this->setUserName(config('easypaisa.prod_username'));
-                $this->setPassword(config('easypaisa.prod_username'));
+                $this->setPassword(config('easypaisa.prod_password'));
                 $this->setStoreId(config('easypaisa.prod_storeid'));
                 $this->setHashKey(config('easypaisa.prod_hashkey'));
             }

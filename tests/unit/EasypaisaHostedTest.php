@@ -44,7 +44,7 @@ class EasypaisaHostedTest extends TestCase
         $result = $easypaisa->sendHostedRequest($requestData);
 
         // Assert
-        $expectedUrl = 'https://easypay.easypaisa.com.pk/tpg/'; // Replace with your expected checkout URL
+          $expectedUrl = config('easypaisa.hosted'); // Replace with your expected checkout URL
         $this->assertTrue(Str::contains($result, $expectedUrl));
     }
 

@@ -19,7 +19,6 @@ class Easypaisa extends Payment
      */
     public function sendRequest($request)
     {
-
         $credentials = $this->getCredentials();
 
         $data = [
@@ -30,13 +29,13 @@ class Easypaisa extends Payment
             'mobileAccountNo'=> strip_tags($request['mobileAccountNo']),
             'emailAddress'=> strip_tags($request['emailAddress'])
         ];
+
         $response = Http::timeout(60)->withHeaders([
             'credentials'=>$credentials,
             'Content-Type'=> 'application/json'
         ])->post($this->getApiUrl(),$data);
 
         $result = $response->json();
-
         return $result;
     }
 
@@ -45,15 +44,25 @@ class Easypaisa extends Payment
      */
     public function sendHostedRequest($request)
     {
-        $data['amount'] = strip_tags($request['amount']);  //Last two digits will be considered as Decimal
-        $data['orderRefNum'] = strip_tags($request['orderRefNum']); // You can customize it (only Max 20 Alpha-Numeric characters)
-        $data['paymentMethod'] = 'InitialRequest';
-        $data['postBackURL'] = $this->getCallbackUrl();
-        $data['storeId'] = $this->getStoreId();
-        $data['timeStamp'] = $this->getTimestamp();
-        $hashk = $this->gethashRequest($data);
-        $data['encryptedHashRequest'] = $hashk;
-        $data['mobileAccountNo'] = '';
-        return $this->getCheckoutUrl($data);
+        try{
+            if(intval($request['amount']) < 0 || empty($request['orderRefNum'])) {
+                return response()->json(['status' => false,'message' => 'Invalid Arguments Passed.'],Response::HTTP_CONFLICT);
+            }
+
+            $data['amount'] = strip_tags($request['amount']);
+            $data['orderRefNum'] = strip_tags($request['orderRefNum']);
+            $data['paymentMethod'] = 'InitialRequest';
+            $data['postBackURL'] = $this->getCallbackUrl();
+            $data['storeId'] = $this->getStoreId();
+            $data['timeStamp'] = $this->getTimestamp();
+            $hashk = $this->gethashRequest($data);
+            $data['encryptedHashRequest'] = $hashk;
+            $data['mobileAccountNo'] = '';
+            return $this->getCheckoutUrl($data);
+        } catch(\Exception $e)
+        {
+            return response()->json(['status' => false,'mesage' => $e->getMessage()],Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

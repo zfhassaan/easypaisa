@@ -105,3 +105,45 @@ return $result;
 ```
 
 The getCredentials() method retrieves the credentials based on the configuration settings
+
+## Hosted Checkout
+To perform a hosted checkout using the EasyPaisa payment gateway, use the following code:
+```php
+$data['amount'] = strip_tags($request['amount']);  //Last two digits will be considered as Decimal
+        $data['orderRefNum'] = strip_tags($request['orderRefNum']); // You can customize it (only Max 20 Alpha-Numeric characters)
+        $data['paymentMethod'] = 'InitialRequest';
+        $data['postBackURL'] = $this->getCallbackUrl();
+        $data['storeId'] = $this->getStoreId();
+        $data['timeStamp'] = $this->getTimestamp();
+        $hashk = $this->gethashRequest($data);
+        $data['encryptedHashRequest'] = $hashk;
+        $data['mobileAccountNo'] = '';
+        return $this->getCheckoutUrl($data);
+```
+The gethashRequest() method retrieves the HashKey after encryption.
+The getCheckoutUrl() method retrieves the checkouturl which will redirect the customer to the Easypaisa portal.
+
+# Hosted.blade.php
+```php
+     <form action="" method="POST" target="_blank">
+@csrf
+        <input name="transactionAmount" value=""/>
+        <input name="orderId" value="" hidden = "true"/>
+        <input name="storeId" value="" hidden = "true"/>
+        <input name="mobileAccountNo" value=""/>
+        <input name="emailAddress" value=""/>
+        <input name="postBackURL" value="" hidden = "true"/>
+        <input type="submit" src=”checkout-button-with-logo.png border=”0” name= “pay”>
+    </form>
+```
+# Controller
+```php
+public function index(Request $request)
+    {
+
+        $easypaisa = new Easypaisa();
+        $response = $easypaisa->sendHostedRequest($request->all());
+        return redirect()->away($response,302);
+
+    }
+```

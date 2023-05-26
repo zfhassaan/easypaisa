@@ -12,9 +12,13 @@ class EasyPaisaServiceProvider extends ServiceProvider
      */
     public function boot() {
         if($this->app->runningInConsole()) {
+
             $this->publishes([
                 __DIR__.'/../config/config.php'=>config_path('easypaisa.php'),
             ],'config');
+            $this->publishes([
+                __DIR__.'/../tests'=>base_path('tests'),
+            ], 'tests');
         }
     }
 

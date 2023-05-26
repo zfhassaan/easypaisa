@@ -4,6 +4,7 @@ namespace Zfhassaan\Easypaisa;
 
 use DateTime;
 use DateTimeZone;
+use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,7 +20,15 @@ class Easypaisa extends Payment
      */
     public function sendRequest($request)
     {
-        $credentials = $this->getCredentials();
+        try{
+            $email = $request['emailAddress'];
+            if (intval($request['transactionAmount']) < 0 || empty($request['orderId']) || empty($request['mobileAccountNo'])) {
+                return response()->json(['status' => false, 'message' => 'Invalid Arguments Passed'], Response::HTTP_CONFLICT);
+            }
+            elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return response()->json(['status' => false, 'message' => 'Email format is incorrect'], Response::HTTP_CONFLICT);
+            }
+            $credentials = $this->getCredentials();
 
         $data = [
             'orderId'=> strip_tags($request['orderId']),
@@ -37,6 +46,12 @@ class Easypaisa extends Payment
 
         $result = $response->json();
         return $result;
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['status'=> false, 'message'=>$e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     /**

@@ -23,7 +23,7 @@ class Easypaisa extends Payment
         try{
             $email = $request['emailAddress'];
             if (intval($request['transactionAmount']) < 0 || empty($request['orderId']) || empty($request['mobileAccountNo'])) {
-                return response()->json(['status' => false, 'message' => 'Invalid Arguments Passed'], Response::HTTP_CONFLICT);
+                return response()->json(['status' => false, 'message' => 'Missing Arguments.'], Response::HTTP_NOT_ACCEPTABLE);
             }
             elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return response()->json(['status' => false, 'message' => 'Email format is incorrect'], Response::HTTP_CONFLICT);

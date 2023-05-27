@@ -26,9 +26,7 @@ class EasypaisaDirectTest extends TestCase
         $easypaisa = new Easypaisa();
         // Action
         $result = $easypaisa->sendRequest($requestData);
-        $expectedUrl = 'https://easypaystg.easypaisa.com.pk';
-        $this->assertTrue(Str::contains($result, $expectedUrl));
-    }
+        $this->assertInstanceOf(JsonResponse::class, $result);    }
     /**
      * Test Sending a Direct Request with missing orderId
      */

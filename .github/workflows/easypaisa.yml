@@ -21,3 +21,12 @@ jobs:
       
     - name: Install dependencies
       run: composer install
+      
+    - name: Set appropriate permissions
+      run: chmod -R 777 storage bootstrap/cache
+
+    - name: Require Easypaisa package
+      run: composer require zfhassaan/easypaisa
+
+    - name: Publish Easypaisa package resources
+      run: php artisan vendor:publish

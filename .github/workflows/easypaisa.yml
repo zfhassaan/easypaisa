@@ -33,11 +33,14 @@ jobs:
       - name: make directory storage
         run:  mkdir storage
 
+      - name: Set appropriate permissions
+        run: chmod -R 777 storage
+        
       - name: make bootstrap
         run:  mkdir bootstrap/cache
-
+        
       - name: Set appropriate permissions
-        run: chmod -R 777 storage bootstrap/cache
+        run: chmod -R 777 bootstrap/cache
 
       - name: Require Easypaisa package
         run: composer require zfhassaan/easypaisa

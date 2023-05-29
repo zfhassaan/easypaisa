@@ -1,22 +1,41 @@
-#Steps to perform for this package to run
-steps:
-  - name: Create Laravel Project
-    run:  composer create-project laravel/laravel easypaisa
+name: Easypaisa Setup
 
-  - name: copy.env file
-    run:  php -r "file_exists('.env') || copy('.env.example', '.env')"
+on:
+  push:
+    branches:
+      - main
 
-  - name: Install Dependencies
-    run:  composer install
+jobs:
+  easypaisa-setup:
+    runs-on: ubuntu-latest
 
-  - name: Generate Key
-    run:  php artisan key:generate
+    steps:
+      - name: Create Laravel project
+        run: composer create-project laravel/laravel easypaisa
 
-  - name: Set Appropriate Permissions
-    run:  php artisan vendor:publish
+      - name: Copy .env file
+        run: php -r "file_exists('.env') || copy('.env.example', '.env')"
 
-  - name: Run EasypaisaDirectTest
-    run:  php artisan test --filter=EasypaisaDirectTest
+      - name: Install dependencies
+        run: composer install
 
-  - name: Run EasypaisaHostedTest
-    run:  php artisan test --filter=EasypaisaHostedTest
+      - name: Generate Laravel application key
+        run: php artisan key:generate
+
+      - name: Set appropriate permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      - name: Require Easypaisa package
+        run: composer require zfhassaan/easypaisa
+
+      - name: Publish Easypaisa package resources
+        run: php artisan vendor:publish
+
+      - name: Dump autoload
+        run: composer dump-autoload
+
+      - name: Run EasypaisaDirectController test
+        run: php artisan test --filter=EasypaisaDirectTest
+
+      - name: Run EasypaisaHostedController test
+        run: php artisan test --filter=EasypaisaHostedTest

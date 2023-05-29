@@ -21,6 +21,3 @@ jobs:
       
     - name: Install dependencies
       run: composer install
-      
-    - name: Require Easypaisa package
-      run: composer require zfhassaan/easypaisa

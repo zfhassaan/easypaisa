@@ -22,5 +22,5 @@ jobs:
     - name: Install dependencies
       run: composer install
       
-    - name: Generate key
-      run:  php artisan key:generate
+    - name: Require Easypaisa package
+      run: composer require zfhassaan/easypaisa

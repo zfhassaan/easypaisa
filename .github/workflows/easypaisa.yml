@@ -36,8 +36,6 @@ jobs:
       - name: Set appropriate permissions
         run: chmod -R 777 storage
         
-      - name: make bootstrap
-        run:  mkdir bootstrap/cache
         
       - name: Set appropriate permissions
         run: chmod -R 777 bootstrap/cache

@@ -27,5 +27,5 @@ jobs:
       - name: Require laravel
         run:  composer require laravel/laravel
         
-      - name: Generate Laravel application key
-        run: php artisan key:generate
+      - name: Dump autoload
+        run: composer dump-autoload

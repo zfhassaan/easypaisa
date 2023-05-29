@@ -11,3 +11,7 @@ jobs:
   laravel-tests:
 
     runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"

@@ -1,44 +1,47 @@
-name: Laravel Project Easypaisa
+name: Laravel
 
 on:
   push:
-    branches:
-      - main
+    branches: [ $default-branch ]
   pull_request:
-    branches:
-      - main
+    branches: [ $default-branch ]
 
 jobs:
-  build:
+  laravel-tests:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create Laravel project
-        run: composer create-project laravel/laravel easypaisa
+    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+      with:
+        php-version: '8.0'
         
-      - name: Copy .env file
-        run: cp .env.example .env
+    - name: Create Laravel project
+      run: composer create-project laravel/laravel easypaisa
+        
+    - name: Copy .env file
+      run: cp .env.example .env
 
-      - name: Install dependencies
-        run: composer install --no-interaction --no-progress
+    - name: Install dependencies
+      run: composer install --no-interaction --no-progress
 
-      - name: Generate application key
-        run: php artisan key:generate
+    - name: Generate application key
+      run: php artisan key:generate
 
-      - name: Set appropriate permissions
-        run: chmod -R 777 storage bootstrap/cache
+    - name: Set appropriate permissions
+      run: chmod -R 777 storage bootstrap/cache
 
-      - name: Require Easypaisa package
-        run: composer require zfhassaan/easypaisa
+    - name: Require Easypaisa package
+      run: composer require zfhassaan/easypaisa
 
-      - name: Publish Easypaisa package resources
-        run: php artisan vendor:publish
+    - name: Publish Easypaisa package resources
+      run: php artisan vendor:publish
 
-      - name: Dump autoload
-        run: composer dump-autoload
+    - name: Dump autoload
+      run: composer dump-autoload
 
-      - name: Run EasypaisaDirectController test
-        run: php artisan test --filter=EasypaisaDirectTest
+    - name: Run EasypaisaDirectController test
+      run: php artisan test --filter=EasypaisaDirectTest
 
-      - name: Run EasypaisaHostedController test
-        run: php artisan test --filter=EasypaisaHostedTest
+    - name: Run EasypaisaHostedController test
+      run: php artisan test --filter=EasypaisaHostedTest

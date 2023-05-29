@@ -23,5 +23,9 @@ jobs:
 
       - name: Install dependencies
         run: composer install
+        
       - name: Require laravel
         run:  composer require laravel/laravel
+        
+      - name: Generate Laravel application key
+        run: php artisan key:generate

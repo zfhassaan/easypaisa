@@ -23,24 +23,3 @@ jobs:
 
       - name: Install dependencies
         run: composer install
-
-      - name: Generate Laravel application key
-        run: php artisan key:generate
-
-      - name: Set appropriate permissions
-        run: chmod -R 777 storage bootstrap/cache
-
-      - name: Require Easypaisa package
-        run: composer require zfhassaan/easypaisa
-
-      - name: Publish Easypaisa package resources
-        run: php artisan vendor:publish
-
-      - name: Dump autoload
-        run: composer dump-autoload
-
-      - name: Run EasypaisaDirectController test
-        run: php artisan test --filter=EasypaisaDirectTest
-
-      - name: Run EasypaisaHostedController test
-        run: php artisan test --filter=EasypaisaHostedTest

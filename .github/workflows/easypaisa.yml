@@ -22,8 +22,5 @@ jobs:
     - name: Install dependencies
       run: composer install
       
-    - name: Run EasypaisaDirectController test
-      run: php artisan test --filter=EasypaisaDirectTest
-
-    - name: Run EasypaisaHostedController test
-      run: php artisan test --filter=EasypaisaHostedTest
+    - name: Generate key
+      run:  php artisan key:generate

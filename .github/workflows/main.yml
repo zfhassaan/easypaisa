@@ -1,25 +1,31 @@
-name: Easypaisa Setup
+name: Laravel Project Easypaisa
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  easypaisa-setup:
+  build:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
       - name: Create Laravel project
         run: composer create-project laravel/laravel easypaisa
-
+        
       - name: Copy .env file
-        run: php -r "file_exists('.env') || copy('.env.example', '.env')"
+        run: cp .env.example .env
 
       - name: Install dependencies
-        run: composer install
+        run: composer install --no-interaction --no-progress
 
-      - name: Generate Laravel application key
+      - name: Generate application key
         run: php artisan key:generate
 
       - name: Set appropriate permissions

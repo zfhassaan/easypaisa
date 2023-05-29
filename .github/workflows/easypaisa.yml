@@ -29,6 +29,13 @@ jobs:
         
       - name: Dump autoload
         run: composer dump-autoload
+        
+      - name: make directory storage
+        run:  mkdir storage
+
+      - name: make bootstrap
+        run:  mkdir bootstrap/cache
+
       - name: Set appropriate permissions
         run: chmod -R 777 storage bootstrap/cache
 

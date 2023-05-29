@@ -21,6 +21,6 @@ jobs:
       
     - name: Install dependencies
       run: composer install
-
-    - name: Publish Easypaisa package resources
-      run: php artisan vendor:publish
+      
+    - name: Require Easypaisa package
+      run: composer require zfhassaan/easypaisa

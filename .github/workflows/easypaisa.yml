@@ -35,9 +35,6 @@ jobs:
 
       - name: Set appropriate permissions
         run: chmod -R 777 storage
-
-      - name: Require Easypaisa package
-        run: composer require zfhassaan/easypaisa
         
       - name: Publish Easypaisa package resources
         run: php artisan vendor:publish

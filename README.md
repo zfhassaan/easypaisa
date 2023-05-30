@@ -14,6 +14,13 @@ This is unofficial Easypaisa API Payment Gateway. This repository  is only creat
 
 
 # Installation
+The Package provides two way of using. 
+- Direct Checkout
+- Hosted Checkout.
+
+To use the Direct checkout ( Rest API ) you can call the already defined function `sendRequest()` and to use the Hosted Checkout (Redirection Method) you can call the `sendHostedRequest()` method to redirect user to easypaisa page for payment. 
+
+
 To install the EasyPaisa package, follow these steps:
 
 Install the package via Composer by running the following command:

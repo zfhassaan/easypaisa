@@ -24,20 +24,23 @@ jobs:
       - name: Install dependencies
         run: composer install
         
-      - name: Require laravel
-        run:  composer require laravel/laravel
-        
       - name: Dump autoload
         run: composer dump-autoload
-        
-      - name: make directory storage
-        run:  mkdir storage
 
       - name: Set appropriate permissions
         run: chmod -R 777 storage
         
+      - name: Require Easypaisa package
+        run: composer require zfhassaan/easypaisa
+        
       - name: Publish Easypaisa package resources
-        run: php artisan vendor:publish
+        run: php artisan vendor:publish --provider="zfhassaan\Easypaisa\EasyPaisaServiceProvider" 
 
       - name: Dump autoload
         run: composer dump-autoload
+        
+      - name: Run EasypaisaDirectController test
+        run: php artisan test --filter=EasypaisaDirectTest
+
+      - name: Run EasypaisaHostedController test
+        run: php artisan test --filter=EasypaisaHostedTest

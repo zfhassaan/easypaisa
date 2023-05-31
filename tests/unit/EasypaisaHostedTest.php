@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit;
 
 use Illuminate\Http\JsonResponse;
 use Tests\TestCase;
@@ -10,7 +10,7 @@ use Zfhassaan\Easypaisa\Easypaisa;
 class EasypaisaHostedTest extends TestCase
 {
     /**
-     * A basic feature test example.
+     * A basic Unit test example.
      */
     public function testSendHostedRequest()
 {

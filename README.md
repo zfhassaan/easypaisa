@@ -10,8 +10,7 @@
 
 
 ## Disclaimer 
-This is unofficial Easypaisa API Payment Gateway. This repository  is only created to help developers in streamlining the integration process. This Package only processes direct checkout process. There's no direct checkout process enabled yet.
-
+This is unofficial Easypaisa API Payment Gateway. This repository  is only created to help developers in streamlining the integration process. 
 
 # Installation
 The Package provides two way of using. 

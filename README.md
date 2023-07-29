@@ -7,7 +7,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/zfhassaan/easypaisa.svg?style=flat-square)](https://packagist.org/packages/zfhassaan/easypaisa)
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/zfhassaan/easypaisa.svg?style=flat-square)](https://packagist.org/packages/zfhassaan/easypaisa)
-
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fzfhassaan%2Feasypaisa&count_bg=%2379C83D&title_bg=%23555555&icon=samsungpay.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 ## Disclaimer 
 This is unofficial Easypaisa API Payment Gateway. This repository  is only created to help developers in streamlining the integration process. 
